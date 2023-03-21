@@ -7,7 +7,7 @@ from keras.applications.inception_v3 import decode_predictions
 
 cifar = keras.datasets.cifar10
 (trainingData, trainingLabels), (testData, testLabels) = cifar.load_data()
-cifar10Labels = {0: 'airplane', 1: 'automobile', 2: 'bird', 3: 'cat', 4: 'deer', 5: 'dog', 6: 'frog', 7: 'horse', 8: 'ship', 9: 'truck'}
+cifar10Labels = ['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']
 # This builtin loadData can only return one set of labels at a time, this is probably fine as each 
 # model will probably be in a separate module or file or whatever
 
