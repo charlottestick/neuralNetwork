@@ -1,12 +1,29 @@
+import time
+from datetime import timedelta
+
+from keras.applications.inception_v3 import (decode_predictions,
+                                             preprocess_input)
 from tensorflow import keras
+from tensorflow import config
 from tensorflow.keras.applications.inception_v3 import InceptionV3
-from keras.applications.inception_v3 import preprocess_input
-from keras.applications.inception_v3 import decode_predictions
+
+if (len(config.list_physical_devices('GPU')) > 0):
+    print('Using GPU')
+else:
+    print('Using CPU')
+
+
+hyperparameters = {
+    'learningRate': 0,
+    'validationSplit': 0,
+    'trainableInceptionLayers': 0,
+    'epochs': 0,
+}
 
 cifar = keras.datasets.cifar100
 (trainingData, trainingLabels), (testData, testLabels) = cifar.load_data(label_mode='fine')
 
-cifar10FineLabels = [
+cifar100FineLabels: list[str] = [
                     'beaver', 'dolphin', 'otter', 'seal', 'whale',
                     'aquarium fish', 'flatfish', 'ray', 'shark', 'trout',
                     'orchids', 'poppies', 'roses', 'sunflowers', 'tulips',
@@ -45,19 +62,13 @@ model.compile(
     metrics=['accuracy']
 )
 
+start = time.perf_counter()
 model.fit(
     x=trainingData, 
-    y=trainingLabels, 
+    y=keras.utils.to_categorical(trainingLabels, num_classes=len(cifar100FineLabels)), 
     epochs=20,
     validation_split=0.2,
     shuffle=True
 )
-
-""" 
-Latest Error Message:
-
-File "/opt/homebrew/lib/python3.9/site-packages/keras/backend.py", line 5119, in categorical_crossentropy
-        target.shape.assert_is_compatible_with(output.shape)
-
-    ValueError: Shapes (32, 1) and (32, 100) are incompatible
-""" 
+end = time.perf_counter()
+print(timedelta(seconds=end-start))
