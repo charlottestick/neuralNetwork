@@ -5,6 +5,7 @@ import time
 import numpy
 
 from tensorflow import keras
+from tensorflow.keras.callbacks import EarlyStopping
 
 from buildModel import buildModel
 from helpers import reportDevice
@@ -34,13 +35,15 @@ prediction = model(image)
 print('\nPredicted label:', cifar100FineLabels[numpy.argmax(prediction)], 'with', round((numpy.amax(prediction) * 100), 2), 'percent confidence')
 print('Actual label:', cifar100FineLabels[testLabels[imageIndex][0]])
 
+earlyStopping = EarlyStopping(monitor='val_loss', patience=3) # Ends early if validation loss stops decreasing for 3 epochs
 start = time.perf_counter()
 model.fit(
     x=trainingData, 
     y=trainingLabels, 
     epochs=hyperparameters['epochs'],
     validation_split=hyperparameters['validationSplit'],
-    shuffle=True
+    shuffle=True,
+    callbacks=[earlyStopping]
 )
 secondsTaken = time.perf_counter() - start
 print('\nTraining elapsed time:', timedelta(seconds=secondsTaken))
