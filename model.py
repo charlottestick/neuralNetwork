@@ -1,6 +1,11 @@
+import time
+from datetime import timedelta
 from typing import Dict
+
 from tensorflow import keras
 from tensorflow.keras.applications.inception_v3 import InceptionV3
+from tensorflow.keras.callbacks import EarlyStopping
+
 
 def buildModel(hyperparameters: Dict):
     inputLayer = keras.Input(shape=(32, 32, 3)) # We need to create an input layer that matches our image size
@@ -23,3 +28,28 @@ def buildModel(hyperparameters: Dict):
     outputLayer = keras.layers.Dense(hyperparameters['numberOfClasses'], activation='softmax')(dropoutLayer)
  
     return keras.Model(inputLayer, outputLayer)
+
+def trainModel(classifier: str, trainingData, trainingLabels, hyperparameters):
+    model = buildModel(hyperparameters)
+    model.compile(
+        optimizer=keras.optimizers.Adam(learning_rate=hyperparameters['learningRate']), 
+        loss=hyperparameters['lossFunction'], 
+        metrics=hyperparameters['trainingMetrics']
+    )
+
+    earlyStopping = EarlyStopping(monitor='val_loss', patience=3) # Ends early if validation loss stops decreasing for 3 epochs
+    start = time.perf_counter()
+    model.fit(
+        x=trainingData, 
+        y=trainingLabels, 
+        epochs=hyperparameters['epochs'],
+        validation_split=hyperparameters['validationSplit'],
+        shuffle=True,
+        callbacks=[earlyStopping]
+    )
+    secondsTaken = time.perf_counter() - start
+    print('\nTraining elapsed time:', timedelta(seconds=secondsTaken))
+    print('Time per epoch:', timedelta(seconds=secondsTaken / hyperparameters['epochs']))
+
+    model.save(classifier)
+    return model

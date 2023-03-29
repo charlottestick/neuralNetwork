@@ -1,4 +1,4 @@
-hyperparameters = {
+subclassHyperparameters = {
     'learningRate': 0.1 ** 7, # Raise to power of desired number of zeros including before decimal
     'validationSplit': 0.3,
     'trainableInceptionLayers': 1000, # Set more than available to train all, aternatively set 0 but that reads less logically, total layers is 189
@@ -7,6 +7,28 @@ hyperparameters = {
     'lossFunction': 'sparse_categorical_crossentropy',
     'trainingMetrics': ['accuracy'],
     'numberOfClasses': 100
+}
+
+classHyperparameters = {
+    'learningRate': 0.1 ** 7, # Raise to power of desired number of zeros including before decimal
+    'validationSplit': 0.3,
+    'trainableInceptionLayers': 1000, # Set more than available to train all, aternatively set 0 but that reads less logically, total layers is 189
+    'epochs': 400,
+    'transferLearningWeights': None, # 'imagenet' to transfer learn
+    'lossFunction': 'sparse_categorical_crossentropy',
+    'trainingMetrics': ['accuracy'],
+    'numberOfClasses': 20
+}
+
+superclassHyperparameters = {
+    'learningRate': 0.1 ** 4, # Raise to power of desired number of zeros including before decimal
+    'validationSplit': 0.3,
+    'trainableInceptionLayers': 1, # Set more than available to train all, aternatively set 0 but that reads less logically, total layers is 189
+    'epochs': 1,
+    'transferLearningWeights': 'imagenet', # 'imagenet' to transfer learn
+    'lossFunction': 'sparse_categorical_crossentropy',
+    'trainingMetrics': ['accuracy'],
+    'numberOfClasses': 2
 }
 
 

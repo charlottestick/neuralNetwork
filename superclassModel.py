@@ -6,17 +6,29 @@ from tensorflow import keras
 
 from model import trainModel
 from helpers import reportDevice
-from hyperparameters import subclassHyperparameters as hyperparameters
-from labels import cifar100FineLabels
+from hyperparameters import superclassHyperparameters as hyperparameters
+from labels import cifar100NaturalLabels, naturalClassesFromCoarse
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '1' # Hide tensorflow's info level logs, warnings and errors will still show
 
 reportDevice()
 
 cifar = keras.datasets.cifar100
-(trainingData, trainingLabels), (testData, testLabels) = cifar.load_data(label_mode='fine')
+(trainingData, trainingLabels), (testData, testLabels) = cifar.load_data(label_mode='coarse')
 
-model = trainModel('subclass', trainingData, trainingLabels, hyperparameters)
+for i in range(len(trainingLabels)):
+    if naturalClassesFromCoarse.count(trainingLabels[i]):
+        trainingLabels[i] = [0]
+    else:
+        trainingLabels[i] = [1]
+
+for i in range(len(testLabels)):
+    if naturalClassesFromCoarse.count(testLabels[i]):
+        testLabels[i] = [0]
+    else:
+        testLabels[i] = [1]
+
+model = trainModel('superclass', trainingData, trainingLabels, hyperparameters)
 
 test_accuracy = model.evaluate(x=testData, y=testLabels)[1]
 print('\nTest accuracy: %.5f' % test_accuracy)
@@ -27,8 +39,8 @@ image = testData[imageIndex]
 image = image.reshape(1, image.shape[0], image.shape[1], image.shape[2])
 
 prediction = model(image)
-print('\nPredicted label:', cifar100FineLabels[numpy.argmax(prediction)], 'with', round((numpy.amax(prediction) * 100), 1), 'percent confidence')
-print('Actual label:   ', cifar100FineLabels[testLabels[imageIndex][0]])
+print('\nPredicted label:', cifar100NaturalLabels[numpy.argmax(prediction)], 'with', round((numpy.amax(prediction) * 100), 1), 'percent confidence')
+print('Actual label:   ', cifar100NaturalLabels[testLabels[imageIndex][0]])
 
 
 # Wrap the training and evalution/prediction into functions, design it to be imported and run from 
