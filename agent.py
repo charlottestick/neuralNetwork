@@ -86,7 +86,7 @@ class Agent:
         index = 0
         totalImages = len(self.testData)
         for image in self.testData:
-            print(' ', index, 'out of', totalImages, end='\r')
+            print('\r', index, 'out of', totalImages, end='')
 
             image = image.reshape(1, image.shape[0], image.shape[1], image.shape[2])
             prediction = model(image)
