@@ -7,6 +7,7 @@ import numpy
 from keras.models import load_model
 from tensorflow import keras
 from tensorflow.keras.applications.inception_v3 import InceptionV3
+from hyperparameters import hyperparameters
 
 from labels import *
 
@@ -36,12 +37,24 @@ class Agent:
             except:
                 self.superclassModel = keras.Model(
                     inputLayer, superclassOutputLayer)
+
+                self.superclassModel.compile(
+                    optimizer=keras.optimizers.Adam(learning_rate=hyperparameters['learningRate']), 
+                    loss=hyperparameters['lossFunction'], 
+                    metrics=hyperparameters['trainingMetrics']
+                )
                 print('Using InceptionV3 for superclass')
 
             try:
                 self.classModel = load_model('./models/class')
             except:
                 self.classModel = keras.Model(inputLayer, classOutputLayer)
+                
+                self.classModel.compile(
+                    optimizer=keras.optimizers.Adam(learning_rate=hyperparameters['learningRate']), 
+                    loss=hyperparameters['lossFunction'], 
+                    metrics=hyperparameters['trainingMetrics']
+                )
                 print('Using InceptionV3 for class')
 
             try:
@@ -49,6 +62,12 @@ class Agent:
             except:
                 self.subclassModel = keras.Model(
                     inputLayer, subclassOutputLayer)
+                
+                self.subclassModel.compile(
+                    optimizer=keras.optimizers.Adam(learning_rate=hyperparameters['learningRate']), 
+                    loss=hyperparameters['lossFunction'], 
+                    metrics=hyperparameters['trainingMetrics']
+                )
                 print('Using InceptionV3 for subclass')
 
         cifar = keras.datasets.cifar100
