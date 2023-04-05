@@ -1,9 +1,9 @@
 hyperparameters = {
-    'learningRate': 0.1,  # Raise to power of desired number of zeros including before decimal
+    'learningRate': 0.1 ** 4,  # Raise to power of desired number of zeros including before decimal
     'epochs': 30,
     'validationSplit': 0.3,
-    'frozenInceptionLayers': 311-75,  # Total layers is 311
-    'transferLearningWeights': None,  # 'imagenet' to transfer learn
+    'frozenInceptionLayers': 311-20,  # Total layers is 311
+    'transferLearningWeights': 'imagenet',  # 'imagenet' to transfer learn
     'lossFunction': 'sparse_categorical_crossentropy',
     'trainingMetrics': ['accuracy']
 }

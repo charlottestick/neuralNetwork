@@ -33,12 +33,12 @@ def buildModel(numberOfClasses: int, hyperparameters: dict[str, any]):
     # untrainedLayer = keras.layers.Dense(1750, activation='relu')(untrainedLayer)
     # untrainedLayer = keras.layers.Dense(1500, activation='relu')(untrainedLayer)
     # untrainedLayer = keras.layers.Dense(1250, activation='relu')(untrainedLayer)
-    untrainedLayer = keras.layers.Dense(1000, activation='relu')(untrainedLayer) #
+    # untrainedLayer = keras.layers.Dense(1000, activation='relu')(untrainedLayer)
     # untrainedLayer = keras.layers.Dense(750,  activation='relu')(untrainedLayer)
-    untrainedLayer = keras.layers.Dense(500,  activation='relu')(untrainedLayer) #
-    # untrainedLayer = keras.layers.Dense(250,  activation='relu')(untrainedLayer)
-    untrainedLayer = keras.layers.Dense(200,  activation='relu')(untrainedLayer)
-    # untrainedLayer = keras.layers.Dense(150,  activation='relu')(untrainedLayer)
+    untrainedLayer = keras.layers.Dense(500,  activation='relu')(untrainedLayer)
+    untrainedLayer = keras.layers.Dense(250,  activation='relu')(untrainedLayer)
+    # untrainedLayer = keras.layers.Dense(200,  activation='relu')(untrainedLayer)
+    untrainedLayer = keras.layers.Dense(150,  activation='relu')(untrainedLayer)
     # untrainedLayer = keras.layers.Dense(100,  activation='relu')(untrainedLayer) 
         
     dropoutLayer = keras.layers.Dropout(0.2)(untrainedLayer)
@@ -87,8 +87,7 @@ def trainModel(classifier: Literal['superclass', 'class', 'subclass'], trainingD
         epochs=hyperparameters['epochs'],
         validation_split=hyperparameters['validationSplit'],
         shuffle=True,
-        callbacks=[tensorBoard],
-        verbose='2'
+        callbacks=[tensorBoard]
     )
     secondsTaken = time.perf_counter() - start
     print('\nTraining elapsed time:', timedelta(seconds=secondsTaken))

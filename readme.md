@@ -7,6 +7,6 @@ Tensorflow needs to be installed with pip or anaconda to run.
 
 ## Running the code
 
-The trained models are stored in the models folder and are loaded by the agent. To run some predictions, instantiate an Agent object from agent.py.
+To train the models run trainModels.py, the hyperparameters are in hyperparameters.py and the model design is in model.py. Training takes about three hours with GPU acceleration.
 
-To train the models run trainModels.py, the hyperparameters are in hyperparameters.py and the model design is in model.py.
+The trained models are stored into the models folder and are loaded by the agent, but are too large to upload to github. To run some predictions, instantiate an Agent object from agent.py.

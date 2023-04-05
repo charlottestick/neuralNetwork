@@ -104,37 +104,50 @@ class Agent:
         plt.show()
 
     def predict(self, classType: Literal['superclass', 'class', 'subclass'], imageIndex: int | None = None) -> None:
-        if classType != 'superclass' and classType != 'class' and classType != 'subclass':
+        if classType == 'superclass':
+            model = self.superclassModel
+            labelValues = cifar100NaturalLabels
+            testLabels = self.testLabelsNatural
+            testData = self.testDataCoarse
+        elif classType == 'class':
+            model = self.classModel
+            labelValues = cifar100CoarseLabels
+            testLabels = self.testLabelsCoarse
+            testData = self.testDataCoarse
+        elif classType == 'subclass':
+            model = self.subclassModel
+            labelValues = cifar100FineLabels
+            testLabels = self.testLabelsFine
+            testData = self.testDataFine
+        else:
             print('Invalid class type')
             return
 
         if imageIndex == None:
             imageIndex = self.getRandomTestImage()
-        image = self.testDataFine[imageIndex] if classType == 'subclass' else self.testDataCoarse[imageIndex]
+        image = testData[imageIndex]
         imageForPrediction = image.reshape(
             1, image.shape[0], image.shape[1], image.shape[2])
 
-        if classType == 'superclass':
-            superclassPrediction = self.superclassModel(imageForPrediction)
-            print('\nPredicted superclass:', cifar100NaturalLabels[numpy.argmax(superclassPrediction)], 'with', round(
-                (numpy.amax(superclassPrediction) * 100), 1), 'percent confidence')
-            print('Actual superclass:   ',
-                  cifar100NaturalLabels[self.testLabelsNatural[imageIndex][0]])
-
-        if classType == 'class':
-            classPrediction = self.classModel(imageForPrediction)
-            print('Predicted class:', cifar100CoarseLabels[numpy.argmax(classPrediction)], 'with', round(
-                (numpy.amax(classPrediction) * 100), 1), 'percent confidence')
-            print('Actual class:   ',
-                  cifar100CoarseLabels[self.testLabelsCoarse[imageIndex][0]])
-
-        if classType == 'subclass':
-            subclassPrediction = self.subclassModel(imageForPrediction)
-            print('Predicted subclass:', cifar100FineLabels[numpy.argmax(subclassPrediction)], 'with', round(
-                (numpy.amax(subclassPrediction) * 100), 1), 'percent confidence')
-            print('Actual subclass:   ',
-                  cifar100FineLabels[self.testLabelsFine[imageIndex][0]])
-
+        prediction = model(imageForPrediction)
+        predictedLabel = labelValues[numpy.argmax(prediction)]
+        actualLabel = labelValues[testLabels[imageIndex][0]]
+        percentConfidence = numpy.amax(prediction) * 100
+        
+        confidenceString: str
+        if percentConfidence < 60:
+            confidenceString = 'could be'
+        elif percentConfidence < 80:
+            confidenceString = 'is likely'
+        else:
+            confidenceString = 'is'
+            
+        predictionString = 'The image ' + confidenceString + ' ' + predictedLabel + ' (' + str(round(percentConfidence, 2)) + '% confidence)'
+        actualString = 'The image actually was ' + actualLabel
+        
+        print(predictionString)
+        print(actualString)
+        
         plt.figure(figsize=(1, 1))
         plt.imshow(image)
         plt.axis("off")
@@ -164,14 +177,11 @@ class Agent:
 
         confusionMatrix = {'targetClass': labelValues[targetClass], 'truePositive': 0,
                            'falsePositive': 0, 'trueNegative': 0, 'falseNegative': 0}
-        print('\nTarget class:', confusionMatrix['targetClass'])
 
         predictions = model.predict(testData, verbose='0')
 
         index = 0
-        totalPredictions = len(testData)
         for prediction in predictions:
-            print('\r ', index + 1, 'out of', totalPredictions, end='')
 
             predictedLabel = numpy.argmax(prediction)
             actualLabel = testLabels[index][0]
@@ -189,7 +199,6 @@ class Agent:
 
             index += 1
 
-        print('\n')
         return confusionMatrix
 
     def getPrecision(self, confusionMatrix) -> int:
